@@ -178,3 +178,21 @@ Please submit your work using Gradescope.
 2. __Please submit your code under the folder `code`.__  Just submit your full assignment 4 source tree. To keep submission sizes small, please do a `make clean` in the program directories prior to creating the archive, and remove any residual output, etc. Before submitting the source files, make sure that all code is compilable and runnable! We should be able to simply make, then execute your programs in the `/bfs` the `/pagerank` directories without manual intervention. 
 
 Our grading scripts will rerun the checker code allowing us to verify your score matches what you submitted in the `writeup.pdf`.  We might also try to run your code on other datasets to further examine its correctness.
+
+
+# Write-Up
+## PageRank
+![](https://i.imgur.com/pzBZqql.png)
+## BFS
+![](https://i.imgur.com/z6qVOTt.png)
+![](https://i.imgur.com/59bWECI.png)
+1. Implement sequential algorithm first, then for top-down parallel every node in frontier, sequentially get the neighbor, finally get the `new_frontier->count` then update.
+I found that difficulty using `__sync_bool_compare_and_swap`, however I found my hero, https://github.com/seahyinghang8/asst3/blob/master/bfs/bfs.cpp, then 
+I turn to `__sync_fetch_and_add` for getting `new_frontier->count`.
+
+2. for bottom-up, at first I compare the distance to determining whether the node is visited or not, but the running time is a little slow (cant get all the point), most of them are similar to top-down
+but I find that the performance is worse if I set `#pragma omp parallel for` only, I get some hint from `seahyinghang8` and `stackoverflow`: https://stackoverflow.com/questions/10850155/whats-the-difference-between-static-and-dynamic-schedule-in-openmp ,
+still I dont really understand, however It seem `dynamic` is better than `static` from the test graph.
+
+3. In this method, we only need to choose which method to go, because I have similar implement between top-down and bottom-up, it appears that compare `frontier->count < left * 0.1` reach really good result, but I dont know which is the best parameter to go.
+
